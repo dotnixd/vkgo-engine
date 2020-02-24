@@ -13,13 +13,13 @@ dependencies:
 	go get github.com/go-sql-driver/mysql
 
 clean:
-	rm $(OBJ)
-	rm vkgo
+	rm $(OBJ) -f
+	rm $(notdir $(CURDIR)) -f
 	rm -rf release
 
 release: clean vkgo
 	mkdir release/ -p
-	cp vkgo release/
+	cp $(notdir $(CURDIR)) release/
 	cp errors.json release/
 	cp plugins release/ -R
 	rm -rf release/plugins/*/*.go release/plugins/basic
