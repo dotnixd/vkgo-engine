@@ -63,5 +63,6 @@ func (p *Plugin) Launch() basic.APIError {
 	_check(err)
 	p.Data.Values.Args = strings.Fields(string(p.Data.Data.GetStringBytes("text")))
 	p.Data.Values.PeerID = p.Data.Data.GetInt64("peer_id")
+	p.Data.Values.FromID = p.Data.Data.GetInt64("from_id")
 	return run.(func(*basic.Plugin) basic.APIError)(&p.Data)
 }

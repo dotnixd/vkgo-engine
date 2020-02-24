@@ -18,6 +18,7 @@ type Plugin struct {
 	Values struct {
 		Args   []string
 		PeerID int64
+		FromID int64
 	}
 }
 
