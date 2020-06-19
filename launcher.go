@@ -57,6 +57,17 @@ func (p *Plugins) Sym(cmd string) (*Plugin, bool) {
 	return &Plugin{}, false
 }
 
+// Help это костыль, для генерации списка команд
+func (p *Plugins) Help() string {
+	var msg string
+
+	for _, sym := range *p {
+		msg += "- " + fmt.Sprint(sym.Data.Cmds) + " - " + sym.Data.Desc + "\n"
+	}
+
+	return ":: Бот выполняет команды, которые обозначены префиксом (любой ASCII-символ в начале команды). Например:\n\n- /пинг\n- !хелп\n- .онлайн\n\n:: Список команд:\n\n" + msg
+}
+
 // Launch запускает обработку сообщения
 func (p *Plugin) Launch() basic.APIError {
 	run, err := p.Sym.Lookup("Run")

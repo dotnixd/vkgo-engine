@@ -12,11 +12,7 @@ type BotConfig struct {
 	GroupID         string
 	Plugins         string
 	ErrorDictionary string
-	SQL             struct {
-		Username string
-		Password string
-		DBName   string
-	}
+	PlugConfigs     string
 }
 
 // эта функция парсит конфиг ("config.json")
@@ -31,9 +27,26 @@ func parseConfig(filename string) BotConfig {
 	cfg.GroupID = string(v.GetStringBytes("group_id"))
 	cfg.Plugins = string(v.GetStringBytes("plugins"))
 	cfg.ErrorDictionary = string(v.GetStringBytes("error_dictionary"))
-	// mysql := v.GetObject("mysql")
-	// cfg.SQL.Username = string(mysql.Get("username").GetStringBytes())
-	// cfg.SQL.Password = string(mysql.Get("password").GetStringBytes())
-	// cfg.SQL.DBName = string(mysql.Get("db").GetStringBytes())
+	cfg.PlugConfigs = string(v.GetStringBytes("plugconfigs"))
+
 	return cfg
+}
+
+func pushConfigs(p *Plugins, filename string) {
+	dat, err := ioutil.ReadFile(filename)
+	_check(err)
+
+	var parser fastjson.Parser
+	v, err := parser.Parse(string(dat))
+	_check(err)
+
+	for _, e := range *p {
+		if e.Data.ConfigPos == "" {
+			continue
+		}
+
+		if v.Exists(e.Data.ConfigPos) {
+			e.Data.Config = v.Get(e.Data.ConfigPos)
+		}
+	}
 }

@@ -29,20 +29,26 @@ func main() {
 	var PSys Plugins
 	PSys.Load(cfg.Plugins)
 
+	pushConfigs(&PSys, cfg.PlugConfigs)
+
 	var ErrorHandler errorapi.ErrorHandler
 	ErrorHandler.Init(&vk, cfg.ErrorDictionary)
 
+	helpmsg := PSys.Help()
+
 	for {
-		Handle(&vk, &PSys, &ErrorHandler)
+		Handle(&vk, &PSys, &ErrorHandler, helpmsg)
 	}
 }
 
 // Handle крутится в бесконечном цикле и получает новые сообщения
-func Handle(vk *vkapi.VK, p *Plugins, e *errorapi.ErrorHandler) {
+func Handle(vk *vkapi.VK, p *Plugins, e *errorapi.ErrorHandler, helpmsg string) {
 	upd := vk.ListenLongPoll()
 	for _, v := range upd.Updates {
 		if v.Type == "message_new" {
-			sym, found := p.Sym(utils.ExtractCmd(string(v.Object.GetStringBytes("text"))))
+			cmd := utils.ExtractCmd(string(v.Object.GetStringBytes("text")))
+
+			sym, found := p.Sym(cmd)
 			if found {
 				sym.Data.VK = vk
 				sym.Data.Data = v.Object
@@ -50,6 +56,10 @@ func Handle(vk *vkapi.VK, p *Plugins, e *errorapi.ErrorHandler) {
 					err := sym.Launch()
 					e.Handle(&sym.Data, &err)
 				}()
+			}
+
+			if cmd == "хелп" || cmd == "помощь" {
+				vk.Method.SendMessage(helpmsg, v.Object.GetInt64("peer_id"))
 			}
 		}
 	}

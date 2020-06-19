@@ -10,12 +10,14 @@ import (
 
 // Plugin описывает плагин
 type Plugin struct {
-	Cmds   []string
-	Desc   string
-	Data   *fastjson.Value
-	VK     *vkapi.VK
-	DB     *sql.DB
-	Values struct {
+	Cmds      []string
+	Desc      string
+	Data      *fastjson.Value
+	Config    *fastjson.Value
+	ConfigPos string
+	VK        *vkapi.VK
+	DB        *sql.DB
+	Values    struct {
 		Args   []string
 		PeerID int64
 		FromID int64
